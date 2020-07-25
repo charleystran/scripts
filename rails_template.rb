@@ -149,6 +149,12 @@ rakefile("bundler-audit.rake") do
 TASK
 end
 
+pg_user = ask('What is your postgresql username?')
+
+inject_into_file "config/database.yml", before: '# For details' do
+  "username: #{pg_user}\n"
+end
+
 rails_command 'webpacker:install'
 
 run "yarn add tailwindcss @tailwindcss/ui @tailwindcss/typography"
@@ -180,6 +186,8 @@ inject_into_file "app/views/layouts/application.html.erb", before: "</head>" do 
 end
 
 gsub_file "tailwind.config.js", /plugins:\s\[],/, "plugins: [require('@tailwindcss/ui'), require('@tailwindcss/typography')],"
+
+rails_command 'webpacker:install:stimulus'
 
 after_bundle do
   run "bin/spring stop"
